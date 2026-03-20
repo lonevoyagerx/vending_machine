@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmed – SmartVend</title>
+    <meta name="description"
+        content="Payment confirmed! Scan the QR code at the vending machine to collect your order." />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏧</text></svg>" />
+    <link rel="stylesheet" href="styles.css" />
+    <!-- QRCode.js (for product collection QR) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        .collect-qr-section {
+            background: linear-gradient(135deg, #0f0f10 0%, #1a0408 100%);
+            border-radius: var(--radius-xl);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .collect-qr-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(230, 57, 70, .2) 0%, transparent 70%);
+        }
+
+        .collect-qr-section .cq-label {
+            font-size: .85rem;
+            color: rgba(255, 255, 255, .7);
+            margin-bottom: 1.25rem;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .collect-qr-section .cq-label strong {
+            color: #fff;
+        }
+
+        .collect-qr-box {
+            width: 200px;
+            height: 200px;
+            background: #fff;
+            border-radius: var(--radius-lg);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .4);
+        }
+
+        .collect-qr-box canvas {
+            border-radius: 8px;
+        }
+
+        .cq-corners::before,
+        .cq-corners::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-color: var(--orange);
+            border-style: solid;
+        }
+
+        .cq-corners::before {
+            top: -2px;
+            left: -2px;
+            border-width: 3px 0 0 3px;
+            border-radius: 4px 0 0 0;
+        }
+
+        .cq-corners::after {
+            bottom: -2px;
+            right: -2px;
+            border-width: 0 3px 3px 0;
+            border-radius: 0 0 4px 0;
+        }
+
+        .cq-order-id {
+            font-family: monospace;
+            font-size: .95rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, .9);
+            background: rgba(255, 255, 255, .08);
+            padding: .4rem 1rem;
+            border-radius: var(--radius-full);
+            margin-bottom: .5rem;
+            display: inline-block;
+            position: relative;
+        }
+
+        .cq-expire {
+            font-size: .72rem;
+            color: rgba(255, 255, 255, .4);
+            position: relative;
+        }
+    </style>
+</head>
+
+<body data-page="success">
+
+    <!-- ── Navbar ──────────────────────────────────────────── -->
+    <nav class="navbar">
+        <div class="container nav-inner">
+            <a href="index.html" class="nav-logo">
+                <div class="logo-icon">🏧</div>
+                SmartVend
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="products.html" class="nav-link">Products</a>
+                <a href="orders.html" class="nav-link">Orders</a>
+            </div>
+            <div class="nav-actions">
+                <a href="cart.html" class="cart-btn">
+                    🛒 Cart
+                    <span class="cart-badge"></span>
+                </a>
+                <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-nav">
+        <div class="mobile-nav-panel">
+            <a href="index.html" class="nav-link">🏠 Home</a>
+            <a href="products.html" class="nav-link">🛍️ Products</a>
+            <a href="orders.html" class="nav-link">📦 Orders</a>
+        </div>
+    </div>
+
+    <!-- ── Success Content ──────────────────────────────────── -->
+    <main class="success-page">
+        <div class="container">
+            <div class="success-card">
+
+                <!-- Animated Check -->
+                <div class="success-icon">✅</div>
+                <h1 class="success-title">Payment Successful!</h1>
+                <p class="success-msg">
+                    Your payment is confirmed. Scan the QR code below at the SmartVend machine to collect your products
+                    instantly.
+                </p>
+
+                <!-- ★ Product Collection QR Code ★ -->
+                <div class="collect-qr-section">
+                    <div class="cq-label">
+                        <strong>📲 Scan at the Vending Machine</strong><br>
+                        Show this QR code to the machine to dispense your order
+                    </div>
+                    <div class="collect-qr-box">
+                        <div class="cq-corners"></div>
+                        <div id="collection-qr"></div>
+                    </div>
+                    <div class="cq-order-id" id="qr-order-id-display">Loading…</div><br>
+                    <div class="cq-expire">⏰ This QR code is valid for 30 minutes</div>
+                </div>
+
+                <!-- Order Status Tracker -->
+                <div class="order-tracker">
+                    <div class="tracker-title">⏱ Order Status</div>
+                    <div class="tracker-steps">
+                        <div class="tracker-step pending" data-step="0">
+                            <div class="tracker-dot">📥</div>
+                            <div class="tracker-info">
+                                <div class="tracker-label">Order Received</div>
+                                <div class="tracker-sub">Your order has been placed</div>
+                            </div>
+                        </div>
+                        <div class="tracker-step pending" data-step="1">
+                            <div class="tracker-dot">💳</div>
+                            <div class="tracker-info">
+                                <div class="tracker-label">Payment Confirmed</div>
+                                <div class="tracker-sub">Payment verified successfully</div>
+                            </div>
+                        </div>
+                        <div class="tracker-step pending" data-step="2">
+                            <div class="tracker-dot">⚙️</div>
+                            <div class="tracker-info">
+                                <div class="tracker-label">Preparing Product</div>
+                                <div class="tracker-sub">Machine is ready to dispense</div>
+                            </div>
+                        </div>
+                        <div class="tracker-step pending" data-step="3">
+                            <div class="tracker-dot">🎯</div>
+                            <div class="tracker-info">
+                                <div class="tracker-label">Ready for Pickup</div>
+                                <div class="tracker-sub">Scan QR at the machine to collect</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Instructions -->
+                <div
+                    style="background:var(--grad-soft);border:1px solid rgba(230,57,70,.2);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1.75rem;text-align:left;">
+                    <div style="font-weight:700;margin-bottom:.6rem;font-size:.95rem;">📲 How to collect your order:
+                    </div>
+                    <div style="font-size:.85rem;color:var(--text-secondary);line-height:1.9;">
+                        1. Go to the SmartVend machine<br>
+                        2. Tap <strong>"Collect Order"</strong> on the machine screen<br>
+                        3. Hold your phone up to the scanner<br>
+                        4. Your product is dispensed automatically! 🎉
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+                    <a href="index.html" class="btn btn-primary">🏠 Return to Home</a>
+                    <a href="products.html" class="btn btn-outline">🛍️ Order More</a>
+                </div>
+
+                <div style="margin-top:1.5rem;font-size:.8rem;color:var(--text-muted);">
+                    📧 Confirmation sent to your registered contact
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confetti -->
+    <canvas id="confetti-canvas" style="position:fixed;inset:0;pointer-events:none;z-index:9998;"></canvas>
+
+    <script src="script.js"></script>
+    <script>
+        // Confetti burst
+        (function () {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            const colors = ['#e63946', '#ff6b2b', '#22c55e', '#3b82f6', '#f59e0b', '#a855f7'];
+            const pieces = Array.from({ length: 100 }, () => ({
+                x: Math.random() * canvas.width, y: Math.random() * -canvas.height,
+                r: Math.random() * 8 + 4, d: Math.random() * 2 + 1,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                tilt: Math.random() * 10 - 5, tiltAngle: 0,
+                tiltAngleInc: Math.random() * .1 + .04,
+            }));
+            let frame, alpha = 1;
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                alpha -= .004; if (alpha <= 0) { cancelAnimationFrame(frame); return; }
+                ctx.globalAlpha = alpha;
+                pieces.forEach(p => {
+                    ctx.beginPath(); ctx.fillStyle = p.color;
+                    ctx.ellipse(p.x, p.y, p.r, p.r / 2, p.tilt, 0, Math.PI * 2); ctx.fill();
+                    p.y += p.d * 3; p.tiltAngle += p.tiltAngleInc; p.tilt = Math.sin(p.tiltAngle) * 12;
+                    if (p.y > canvas.height) { p.y = -20; p.x = Math.random() * canvas.width; }
+                });
+                frame = requestAnimationFrame(draw);
+            }
+            draw();
+        })();
+    </script>
+</body>
+
+</html>

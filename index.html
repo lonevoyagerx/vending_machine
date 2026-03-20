@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vending Machine</title>
+
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+    body { font-family: Arial; }
+    .product, .order {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🛒 Products</h1>
+  <div id="products"></div>
+
+  <h1>📦 Orders</h1>
+  <div id="orders"></div>
+
+  <script>
+    // 🔑 STEP 1: CONNECT SUPABASE
+    const supabaseUrl = "https://ihnvropaqzmjxikxgggd.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlobnZyb3BhcXptanhpa3hnZ2dkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzMTIxMjIsImV4cCI6MjA4NTg4ODEyMn0.YQAo2wx4SnBqFQuvgB5xzOf7ycYaiZxtvxaWUdj09IE";
+
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    // 📦 STEP 2: LOAD PRODUCTS
+    async function loadProducts() {
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .gt("stock_quantity", 0);
+
+      const container = document.getElementById("products");
+      container.innerHTML = "";
+
+      data.forEach(product => {
+        container.innerHTML += `
+          <div class="product">
+            <h3>${product.name}</h3>
+            <p>₹${product.price}</p>
+            <button onclick="orderProduct('${product.id}')">
+              Buy
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    // 🛒 STEP 3: PLACE ORDER
+    async function orderProduct(productId) {
+      const { error } = await supabase
+        .from("orders")
+        .insert([
+          {
+            product_id: productId,
+            status: "pending"
+          }
+        ]);
+
+      if (!error) {
+        alert("Order placed!");
+        fetchOrders(); // refresh orders
+      }
+    }
+
+    // 📥 STEP 4: FETCH ORDERS
+    async function fetchOrders() {
+      const { data, error } = await supabase
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      const container = document.getElementById("orders");
+      container.innerHTML = "";
+
+      data.forEach(order => {
+        container.innerHTML += `
+          <div class="order">
+            <p>Order ID: ${order.id}</p>
+            <p>Product ID: ${order.product_id}</p>
+            <p>Status: ${order.status}</p>
+          </div>
+        `;
+      });
+    }
+
+    // ⚡ STEP 5: REAL-TIME LISTENER (AUTO UPDATE)
+    supabase
+      .channel("orders-channel")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "orders" },
+        payload => {
+          console.log("New Order:", payload.new);
+          fetchOrders();
+        }
+      )
+      .subscribe();
+
+    // 🚀 INITIAL LOAD
+    loadProducts();
+    fetchOrders();
+
+  </script>
+
+</body>
+</html>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Blog</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 SmartVend. All rights reserved.</span>
+        <span>Made with ❤️ for smart snacking</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

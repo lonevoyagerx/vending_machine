@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment – SmartVend</title>
+    <meta name="description" content="Complete your SmartVend payment securely via UPI, NetBanking, or Card." />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏧</text></svg>" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        /* Payment method cards */
+        .pay-method-tabs {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .pay-method-tab {
+            flex: 1;
+            min-width: 100px;
+            padding: .7rem .75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface2);
+            cursor: pointer;
+            font-size: .82rem;
+            font-weight: 600;
+            text-align: center;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .3rem;
+        }
+
+        .pay-method-tab .pm-icon {
+            font-size: 1.4rem;
+        }
+
+        .pay-method-tab:hover {
+            border-color: var(--red-500);
+            background: var(--surface);
+        }
+
+        .pay-method-tab.active {
+            border-color: var(--red-500);
+            background: var(--grad-soft);
+            color: var(--red-500);
+        }
+
+        /* UPI Section */
+        .upi-apps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: .75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .upi-app {
+            padding: .75rem .5rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--surface);
+        }
+
+        .upi-app:hover,
+        .upi-app.selected {
+            border-color: var(--red-500);
+            background: var(--grad-soft);
+        }
+
+        .upi-app .upi-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: .3rem;
+        }
+
+        .upi-app .upi-name {
+            font-size: .7rem;
+            font-weight: 600;
+        }
+
+        .upi-id-row {
+            display: flex;
+            gap: .5rem;
+        }
+
+        .upi-id-row input {
+            flex: 1;
+            padding: .75rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: .9rem;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+            background: var(--surface2);
+        }
+
+        .upi-id-row input:focus {
+            border-color: var(--red-500);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, .1);
+        }
+
+        /* Card Section */
+        .card-visual {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            color: #fff;
+            margin-bottom: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-visual::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .card-chip {
+            font-size: 1.4rem;
+            margin-bottom: .75rem;
+        }
+
+        .card-number {
+            font-size: 1.1rem;
+            font-family: monospace;
+            letter-spacing: .15em;
+            margin-bottom: .75rem;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: .78rem;
+            opacity: .7;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .75rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+        }
+
+        .form-group label {
+            font-size: .78rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .form-group input {
+            padding: .7rem .9rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: .9rem;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+            background: var(--surface2);
+        }
+
+        .form-group input:focus {
+            border-color: var(--red-500);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, .1);
+        }
+
+        /* NetBanking */
+        .bank-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: .6rem;
+            margin-bottom: 1rem;
+        }
+
+        .bank-item {
+            padding: .6rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        .bank-item:hover,
+        .bank-item.selected {
+            border-color: var(--red-500);
+            background: var(--grad-soft);
+            color: var(--red-500);
+        }
+
+        .bank-item .bank-icon {
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: .2rem;
+        }
+
+        /* Processing overlay */
+        .processing-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .65);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .processing-overlay.show {
+            display: flex;
+        }
+
+        .processing-box {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            text-align: center;
+            width: 280px;
+            animation: successPop .4s cubic-bezier(.34, 1.56, .64, 1) forwards;
+        }
+
+        .spinner {
+            width: 52px;
+            height: 52px;
+            border: 4px solid var(--border);
+            border-top-color: var(--red-500);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .pay-section {
+            display: none;
+        }
+
+        .pay-section.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body data-page="payment">
+
+    <!-- ── Navbar ──────────────────────────────────────────── -->
+    <nav class="navbar">
+        <div class="container nav-inner">
+            <a href="index.html" class="nav-logo">
+                <div class="logo-icon">🏧</div>
+                SmartVend
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="products.html" class="nav-link">Products</a>
+                <a href="orders.html" class="nav-link">Orders</a>
+            </div>
+            <div class="nav-actions">
+                <a href="cart.html" class="cart-btn">
+                    🛒 Cart
+                    <span class="cart-badge"></span>
+                </a>
+                <button class="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-nav">
+        <div class="mobile-nav-panel">
+            <a href="index.html" class="nav-link">🏠 Home</a>
+            <a href="products.html" class="nav-link">🛍️ Products</a>
+            <a href="orders.html" class="nav-link">📦 Orders</a>
+        </div>
+    </div>
+
+    <!-- Page Hero -->
+    <div class="page-hero">
+        <div class="container">
+            <h1>💳 Secure Payment</h1>
+            <p>Choose your preferred payment method</p>
+        </div>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div style="border-bottom:1px solid var(--border);background:var(--surface);padding:.85rem 0;">
+        <div class="container">
+            <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--text-muted);">
+                <a href="products.html" style="color:var(--red-500);font-weight:600;">Products</a>
+                <span>›</span>
+                <a href="cart.html" style="color:var(--red-500);font-weight:600;">Cart</a>
+                <span>›</span>
+                <span style="color:var(--text-primary);font-weight:600;">Payment</span>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div class="container">
+            <div class="payment-layout">
+
+                <!-- LEFT: Payment Methods -->
+                <div>
+                    <div class="card">
+                        <div class="card-title">💳 Select Payment Method</div>
+
+                        <!-- Method Tabs -->
+                        <div class="pay-method-tabs">
+                            <div class="pay-method-tab active" data-method="upi">
+                                <span class="pm-icon">📱</span> UPI
+                            </div>
+                            <div class="pay-method-tab" data-method="card">
+                                <span class="pm-icon">💳</span> Card
+                            </div>
+                            <div class="pay-method-tab" data-method="netbanking">
+                                <span class="pm-icon">🏦</span> NetBanking
+                            </div>
+                            <div class="pay-method-tab" data-method="wallet">
+                                <span class="pm-icon">👛</span> Wallet
+                            </div>
+                        </div>
+
+                        <!-- UPI Section -->
+                        <div class="pay-section active" id="section-upi">
+                            <div
+                                style="font-size:.82rem;font-weight:600;color:var(--text-secondary);margin-bottom:.75rem;">
+                                Choose UPI App</div>
+                            <div class="upi-apps">
+                                <div class="upi-app selected" data-app="gpay">
+                                    <span class="upi-icon">🟢</span>
+                                    <span class="upi-name">GPay</span>
+                                </div>
+                                <div class="upi-app" data-app="phonepe">
+                                    <span class="upi-icon">💜</span>
+                                    <span class="upi-name">PhonePe</span>
+                                </div>
+                                <div class="upi-app" data-app="paytm">
+                                    <span class="upi-icon">🔵</span>
+                                    <span class="upi-name">Paytm</span>
+                                </div>
+                                <div class="upi-app" data-app="other">
+                                    <span class="upi-icon">📲</span>
+                                    <span class="upi-name">Other</span>
+                                </div>
+                            </div>
+                            <div
+                                style="font-size:.82rem;font-weight:600;color:var(--text-secondary);margin-bottom:.5rem;">
+                                Or enter UPI ID</div>
+                            <div class="upi-id-row">
+                                <input type="text" id="upi-id-input" placeholder="yourname@upi" />
+                                <button class="btn btn-ghost btn-sm"
+                                    onclick="document.getElementById('upi-id-input').focus()">Verify</button>
+                            </div>
+                            <div style="font-size:.75rem;color:var(--text-muted);margin-top:.5rem;">e.g.
+                                mobilenumber@upi, name@okaxis, name@ybl</div>
+                        </div>
+
+                        <!-- Card Section -->
+                        <div class="pay-section" id="section-card">
+                            <div class="card-visual">
+                                <div class="card-chip">💳</div>
+                                <div class="card-number" id="card-number-preview">•••• •••• •••• ••••</div>
+                                <div class="card-footer">
+                                    <span id="card-holder-preview">YOUR NAME</span>
+                                    <span id="card-expiry-preview">MM/YY</span>
+                                </div>
+                            </div>
+                            <div class="flex-col gap-3">
+                                <div class="form-group">
+                                    <label>Card Number</label>
+                                    <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19"
+                                        oninput="formatCard(this)" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Cardholder Name</label>
+                                    <input type="text" id="card-holder" placeholder="Full Name"
+                                        oninput="document.getElementById('card-holder-preview').textContent=this.value.toUpperCase()||'YOUR NAME'" />
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Expiry Date</label>
+                                        <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5"
+                                            oninput="formatExpiry(this)" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>CVV</label>
+                                        <input type="password" id="card-cvv" placeholder="•••" maxlength="3" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- NetBanking Section -->
+                        <div class="pay-section" id="section-netbanking">
+                            <div
+                                style="font-size:.82rem;font-weight:600;color:var(--text-secondary);margin-bottom:.75rem;">
+                                Select your bank</div>
+                            <div class="bank-grid">
+                                <div class="bank-item selected" data-bank="sbi"><span class="bank-icon">🏦</span>SBI
+                                </div>
+                                <div class="bank-item" data-bank="hdfc"><span class="bank-icon">🏦</span>HDFC</div>
+                                <div class="bank-item" data-bank="icici"><span class="bank-icon">🏦</span>ICICI</div>
+                                <div class="bank-item" data-bank="axis"><span class="bank-icon">🏦</span>Axis</div>
+                                <div class="bank-item" data-bank="kotak"><span class="bank-icon">🏦</span>Kotak</div>
+                                <div class="bank-item" data-bank="other"><span class="bank-icon">🏦</span>Other</div>
+                            </div>
+                            <input type="text" placeholder="Search other banks..."
+                                style="width:100%;padding:.7rem 1rem;border:2px solid var(--border);border-radius:var(--radius-md);font-size:.9rem;font-family:inherit;outline:none;background:var(--surface2);" />
+                        </div>
+
+                        <!-- Wallet Section -->
+                        <div class="pay-section" id="section-wallet">
+                            <div
+                                style="font-size:.82rem;font-weight:600;color:var(--text-secondary);margin-bottom:.75rem;">
+                                Select Wallet</div>
+                            <div class="bank-grid">
+                                <div class="bank-item selected"><span class="bank-icon">🪙</span>Paytm</div>
+                                <div class="bank-item"><span class="bank-icon">📱</span>MobiKwik</div>
+                                <div class="bank-item"><span class="bank-icon">💰</span>Freecharge</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security badges -->
+                    <div
+                        style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.75rem;padding:.9rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);">
+                        <span
+                            style="font-size:.75rem;color:var(--text-muted);display:flex;align-items:center;gap:.3rem;">🔒
+                            256-bit SSL</span>
+                        <span
+                            style="font-size:.75rem;color:var(--text-muted);display:flex;align-items:center;gap:.3rem;">✅
+                            PCI-DSS Compliant</span>
+                        <span
+                            style="font-size:.75rem;color:var(--text-muted);display:flex;align-items:center;gap:.3rem;">🛡️
+                            Bank-grade security</span>
+                        <span
+                            style="font-size:.75rem;color:var(--text-muted);display:flex;align-items:center;gap:.3rem;">↩️
+                            Easy refund policy</span>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Order Summary -->
+                <div>
+                    <div class="card">
+                        <div class="card-title">📋 Order Summary</div>
+                        <div class="order-id-chip">
+                            🔖 Order ID: <span class="order-id-text">Loading…</span>
+                        </div>
+                        <div id="pay-items"><!-- Rendered by script.js --></div>
+                        <div style="border-top:2px solid var(--border);margin-top:1rem;padding-top:1rem;">
+                            <div
+                                style="display:flex;justify-content:space-between;font-size:.88rem;color:var(--text-secondary);margin-bottom:.5rem;">
+                                <span>Subtotal</span><span id="pay-subtotal">—</span>
+                            </div>
+                            <div
+                                style="display:flex;justify-content:space-between;font-size:.88rem;color:#16a34a;margin-bottom:.5rem;">
+                                <span>Discount (5%)</span><span id="pay-discount">—</span>
+                            </div>
+                            <div
+                                style="display:flex;justify-content:space-between;font-size:.88rem;color:#16a34a;margin-bottom:.75rem;">
+                                <span>Delivery</span><span>Free</span>
+                            </div>
+                            <div
+                                style="display:flex;justify-content:space-between;font-size:1.15rem;font-weight:800;color:var(--text-primary);">
+                                <span>Total Payable</span><span id="pay-total">—</span>
+                            </div>
+                        </div>
+
+                        <button class="confirm-pay-btn" id="confirm-pay-btn" style="margin-top:1.25rem;">
+                            💳 Pay Now
+                        </button>
+
+                        <div style="font-size:.75rem;color:var(--text-muted);margin-top:.75rem;text-align:center;">
+                            🔒 Secure payment · Money-back guarantee
+                        </div>
+
+                        <div
+                            style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);text-align:center;">
+                            <a href="cart.html" style="color:var(--text-muted);font-size:.82rem;font-weight:500;">← Back
+                                to cart</a>
+                        </div>
+                    </div>
+
+                    <!-- Info box -->
+                    <div
+                        style="background:var(--grad-soft);border:1px solid rgba(230,57,70,.2);border-radius:var(--radius-lg);padding:1.1rem;margin-top:.75rem;">
+                        <div style="font-weight:700;font-size:.88rem;margin-bottom:.5rem;">🎯 After payment:</div>
+                        <div style="font-size:.8rem;color:var(--text-secondary);line-height:1.7;">
+                            A <strong>unique QR code</strong> will be generated for you to<br>
+                            scan at the vending machine and collect your order.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Processing Overlay -->
+    <div class="processing-overlay" id="processing-overlay">
+        <div class="processing-box">
+            <div class="spinner" id="processing-spinner"></div>
+            <div style="font-weight:700;font-size:1rem;margin-bottom:.4rem;" id="processing-text">Processing Payment…
+            </div>
+            <div style="font-size:.82rem;color:var(--text-muted);">Please do not close this window</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Method tab switching
+        document.querySelectorAll('.pay-method-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.pay-method-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.pay-section').forEach(s => s.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('section-' + tab.dataset.method).classList.add('active');
+            });
+        });
+
+        // UPI app selection
+        document.querySelectorAll('.upi-app').forEach(app => {
+            app.addEventListener('click', () => {
+                document.querySelectorAll('.upi-app').forEach(a => a.classList.remove('selected'));
+                app.classList.add('selected');
+            });
+        });
+
+        // Bank selection
+        document.querySelectorAll('.bank-item').forEach(item => {
+            item.addEventListener('click', () => {
+                item.closest('.bank-grid').querySelectorAll('.bank-item').forEach(b => b.classList.remove('selected'));
+                item.classList.add('selected');
+            });
+        });
+
+        // Card number formatting
+        function formatCard(input) {
+            let v = input.value.replace(/\D/g, '').substring(0, 16);
+            input.value = v.replace(/(.{4})/g, '$1 ').trim();
+            const preview = v.padEnd(16, '•');
+            document.getElementById('card-number-preview').textContent =
+                preview.substring(0, 4) + ' ' + preview.substring(4, 8) + ' ' + preview.substring(8, 12) + ' ' + preview.substring(12, 16);
+        }
+        function formatExpiry(input) {
+            let v = input.value.replace(/\D/g, '').substring(0, 4);
+            if (v.length >= 2) v = v.substring(0, 2) + '/' + v.substring(2);
+            input.value = v;
+            document.getElementById('card-expiry-preview').textContent = v || 'MM/YY';
+        }
+    </script>
+</body>
+
+</html>

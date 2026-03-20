@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Products – SmartVend</title>
+    <meta name="description"
+        content="Browse SmartVend's full product catalog — drinks, snacks, chocolates, and healthy choices." />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏧</text></svg>" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body data-page="products">
+
+    <!-- ── Navbar ──────────────────────────────────────────── -->
+    <nav class="navbar">
+        <div class="container nav-inner">
+            <a href="index.html" class="nav-logo">
+                <div class="logo-icon">🏧</div>
+                SmartVend
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="products.html" class="nav-link active">Products</a>
+                <a href="orders.html" class="nav-link">Orders</a>
+            </div>
+            <div class="nav-actions">
+                <a href="cart.html" class="cart-btn">
+                    🛒 Cart
+                    <span class="cart-badge"></span>
+                </a>
+                <button class="hamburger" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="mobile-nav">
+        <div class="mobile-nav-panel">
+            <a href="index.html" class="nav-link">🏠 Home</a>
+            <a href="products.html" class="nav-link active">🛍️ Products</a>
+            <a href="orders.html" class="nav-link">📦 Orders</a>
+            <a href="cart.html" class="btn btn-primary" style="margin-top:1rem">🛒 View Cart</a>
+        </div>
+    </div>
+
+    <!-- ── Page Hero ────────────────────────────────────────── -->
+    <div class="page-hero">
+        <div class="container">
+            <h1>🛍️ Product Menu</h1>
+            <p>Freshly stocked. Tap to add to cart.</p>
+        </div>
+    </div>
+
+    <!-- ── Search Bar ───────────────────────────────────────── -->
+    <div class="search-bar-wrap">
+        <div class="container">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input class="search-input" type="text" placeholder="Search for snacks, drinks, chocolates…"
+                    autocomplete="off" />
+                <button class="clear-btn" title="Clear">✕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Filter Tabs ──────────────────────────────────────── -->
+    <div class="filter-wrap">
+        <div class="container">
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-cat="all">🌟 All</button>
+                <button class="filter-tab" data-cat="drinks">🥤 Drinks</button>
+                <button class="filter-tab" data-cat="snacks">🍟 Snacks</button>
+                <button class="filter-tab" data-cat="chocolates">🍫 Chocolates</button>
+                <button class="filter-tab" data-cat="healthy">🥗 Healthy</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Products Grid ────────────────────────────────────── -->
+    <section class="products-section">
+        <div class="container">
+            <div id="products-grid" class="products-grid">
+                <!-- Rendered by script.js -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Footer ──────────────────────────────────────────── -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <div class="nav-logo">
+                        <div class="logo-icon">🏧</div>
+                        SmartVend
+                    </div>
+                    <p>Smart snacking at your fingertips.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Follow Us</h4>
+                    <ul>
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2026 SmartVend</span>
+                <span>Made with ❤️ for smart snacking</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Cart FAB (mobile) -->
+    <a href="cart.html" id="cart-fab" style="
+    display:none;
+    position:fixed; bottom:24px; right:24px; z-index:500;
+    width:60px; height:60px; border-radius:50%;
+    background:var(--gradient); color:#fff; font-size:1.4rem;
+    align-items:center; justify-content:center;
+    box-shadow:var(--shadow-red);
+    text-decoration:none;
+  ">🛒</a>
+
+    <script src="script.js"></script>
+    <script>
+        // Show FAB on mobile
+        if (window.innerWidth <= 600) {
+            document.getElementById('cart-fab').style.display = 'flex';
+        }
+    </script>
+</body>
+
+</html>
